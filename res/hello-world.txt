@@ -1,0 +1,315 @@
+Python.version 3
+token->(2, '%PDF-1.1\r\n')
+PDF Comment '%PDF-1.1\r\n'
+
+token->(3, '1')
+token->(1, '\r\n')
+token->(2, '<<')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '/')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(3, '2')
+token->(1, ' ')
+token->(3, '0')
+token->(1, ' ')
+token->(3, 'R')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(3, '3')
+token->(1, ' ')
+token->(3, '0')
+token->(1, ' ')
+token->(3, 'R')
+token->(1, '\r\n')
+token->(2, '>>')
+token->(1, '\r\n')
+token->(3, 'endobj')
+obj 1 0
+Type: /Catalog
+Referencing: 2 0 R, 3 0 R
+   /Type /Catalog
+   /Outlines 2 0 R
+   /Pages 3 0 R
+
+
+token->(3, '2')
+token->(1, '\r\n')
+token->(2, '<<')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '/')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(3, '0')
+token->(1, '\r\n')
+token->(2, '>>')
+token->(1, '\r\n')
+token->(3, 'endobj')
+obj 2 0
+Type: /Outlines
+Referencing: 
+   /Type /Outlines
+   /Count 0
+
+
+token->(3, '3')
+token->(1, '\r\n')
+token->(2, '<<')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '/')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '[')
+token->(3, '4')
+token->(1, ' ')
+token->(3, '0')
+token->(1, ' ')
+token->(3, 'R')
+token->(2, ']')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(3, '1')
+token->(1, '\r\n')
+token->(2, '>>')
+token->(1, '\r\n')
+token->(3, 'endobj')
+obj 3 0
+Type: /Pages
+Referencing: 4 0 R
+   /Type /Pages
+   /Kids [4 0 R]
+   /Count 1
+
+
+token->(3, '4')
+token->(1, '\r\n')
+token->(2, '<<')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '/')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(3, '3')
+token->(1, ' ')
+token->(3, '0')
+token->(1, ' ')
+token->(3, 'R')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '[')
+token->(3, '0')
+token->(1, ' ')
+token->(3, '0')
+token->(1, ' ')
+token->(3, '612')
+token->(1, ' ')
+token->(3, '792')
+token->(2, ']')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(3, '5')
+token->(1, ' ')
+token->(3, '0')
+token->(1, ' ')
+token->(3, 'R')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' \r\n ')
+token->(2, '<<')
+token->(1, ' ')
+token->(2, '/')
+token->(1, ' ')
+token->(3, '6')
+token->(1, ' ')
+token->(3, '0')
+token->(1, ' ')
+token->(3, 'R')
+token->(1, '\r\n    ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '<<')
+token->(1, ' ')
+token->(2, '/')
+token->(1, ' ')
+token->(3, '7')
+token->(1, ' ')
+token->(3, '0')
+token->(1, ' ')
+token->(3, 'R')
+token->(1, ' ')
+token->(2, '>>')
+token->(1, '\r\n ')
+token->(2, '>>')
+token->(1, '\r\n')
+token->(2, '>>')
+token->(1, '\r\n')
+token->(3, 'endobj')
+obj 4 0
+Type: /Page
+Referencing: 3 0 R, 5 0 R, 6 0 R, 7 0 R
+   /Type /Page
+   /Parent 3 0 R
+   /MediaBox [0 0 612 792]
+   /Contents 5 0 R
+   /Resources
+       /ProcSet 6 0 R
+       /Font
+           /F1 7 0 R
+
+
+token->(3, '5')
+token->(1, '\r\n')
+token->(2, '<<')
+token->(1, ' ')
+token->(2, '/')
+token->(1, ' ')
+token->(3, '48')
+token->(1, ' ')
+token->(2, '>>')
+token->(1, '\r\n')
+token->(3, 'stream')
+token->(1, '\r\n')
+token->(3, 'BT')
+token->(1, '\r\n')
+token->(2, '/')
+token->(1, ' ')
+token->(3, '24')
+token->(1, ' ')
+token->(3, 'Tf')
+token->(1, '\r\n')
+token->(3, '100')
+token->(1, ' ')
+token->(3, '700')
+token->(1, ' ')
+token->(3, 'Td')
+token->(1, '\r\n')
+token->(2, '(')
+token->(3, 'Hello')
+token->(1, ' ')
+token->(3, 'World')
+token->(2, ')')
+token->(3, 'Tj')
+token->(1, '\r\n')
+token->(3, 'ET')
+token->(1, '\r\n')
+token->(3, 'endstream')
+token->(1, '\r\n')
+token->(3, 'endobj')
+obj 5 0
+Type: 
+Referencing: 
+--stream--
+   /Length 48
+
+
+token->(3, '6')
+token->(1, '\r\n')
+token->(2, '[')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '/')
+token->(2, ']')
+token->(1, '\r\n')
+token->(3, 'endobj')
+obj 6 0
+Type: 
+Referencing: 
+
+
+token->(3, '7')
+token->(1, '\r\n')
+token->(2, '<<')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '/')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '/')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '/')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '/')
+token->(1, '\r\n ')
+token->(2, '/')
+token->(1, ' ')
+token->(2, '/')
+token->(1, '\r\n')
+token->(2, '>>')
+token->(1, '\r\n')
+token->(3, 'endobj')
+obj 7 0
+Type: /Font
+Referencing: 
+   /Type /Font
+   /Subtype /Type1
+   /Name /F1
+   /BaseFont /Helvetica
+   /Encoding /MacRomanEncoding
+
+
+token->(3, 'xref')
+token->(3, '0')
+token->(3, '8')
+token->(3, '0000000000')
+token->(3, '65535')
+token->(3, 'f')
+token->(3, '0000000012')
+token->(3, '00000')
+token->(3, 'n')
+token->(3, '0000000089')
+token->(3, '00000')
+token->(3, 'n')
+token->(3, '0000000145')
+token->(3, '00000')
+token->(3, 'n')
+token->(3, '0000000214')
+token->(3, '00000')
+token->(3, 'n')
+token->(3, '0000000381')
+token->(3, '00000')
+token->(3, 'n')
+token->(3, '0000000485')
+token->(3, '00000')
+token->(3, 'n')
+token->(3, '0000000518')
+token->(3, '00000')
+token->(3, 'n')
+token->(3, 'trailer')
+xref <__main__.cPDFElementXref object at 0x1063af8d0>
+token->(3, 'trailer')
+token->(2, '<<')
+token->(2, '/')
+token->(3, '8')
+token->(2, '/')
+token->(3, '1')
+token->(3, '0')
+token->(3, 'R')
+token->(2, '>>')
+token->(3, 'startxref')
+token->(3, 'startxref')
+startxref 642
+
+token->(2, '%%EOF\r\n')
+PDF Comment '%%EOF\r\n'
+

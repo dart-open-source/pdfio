@@ -1,0 +1,25 @@
+name: pdfio
+author: Alm Pazel <almpazel@gmail.com>
+description: A dart lib for low-level PDF io, parse objects, fonts, images and others.
+homepage: https://gitee.com/almpazel/dart-pdfio.git
+version: 0.0.1
+## pub publish --server=https://pub.dartlang.org -v
+
+environment:
+  sdk: '>=2.8.1 <3.0.0'
+
+dependencies:
+
+  meta: ^1.1.5
+  vector_math: ^2.0.0
+  utf: ^0.9.0
+  crypto: ^2.0.6
+  archive: ^2.0.10
+  barcode: ^1.16.0
+  image: ^2.1.10
+  path_parsing: ^0.1.4
+  byter:
+    path: ../byter
+dev_dependencies:
+  test:
+  pedantic: 1.9.2
