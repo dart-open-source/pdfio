@@ -43,7 +43,7 @@ void main() {
     RichText.debug = true;
     pdf = Document();
 
-    arabicFont = loadFont('hacen-tunisia.ttf');
+    arabicFont = loadFont('fonts/Amiri-Bold.ttf');
     style = TextStyle(font: arabicFont, fontSize: 30);
   });
 

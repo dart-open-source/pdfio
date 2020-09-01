@@ -87,7 +87,7 @@ class TtfWriter {
       } else {
         compounds[compound] = glyphsInfo.length;
         final TtfGlyphInfo glyph = ttf.readGlyph(compound);
-        assert(glyph.compounds.isEmpty, 'This is not a simple glyph');
+//        assert(glyph.compounds.isEmpty, 'This is not a simple glyph');
         glyphsInfo.add(glyph);
       }
     }
