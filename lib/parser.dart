@@ -5,25 +5,22 @@ import 'package:collection/collection.dart';
 import 'global.dart';
 
 void main() async {
-
-  var startTime=timeint();
+  var startTime = timeint();
   var dir = Directory.current.path;
   var path = '$dir/res/test.pdf';
   path = '$dir/res/hello-world.pdf';
 //  path = '$dir/pdf/2016201680666.pdf';
 //  path = '$dir/pdf/100-p.pdf';
 //  path = '$dir/pdf/jpeg.pdf';
-//  path = '/Users/alm/Documents/SP1SB.pdf';
+  path = '/Users/alm/Documents/1112.pdf';
   var file = File(path);
-  print('file.lengthSync(${file.lengthSync()})');
+  print('file.lengthSync(${file.lengthSync()}):>${file.path}');
 
-  var byter = Byter(file.readAsBytesSync());
-  print(byter);
-  var token=PDFTokenizer(byter);
-  print(token);
-  PDFObjecter(token).getObject();
+  var object = PDFObjecter.fromFile(file).getObjects();
+  object.forEach((element) {
+    print(element);
+  });
   print(timediff(startTime));
-
 }
 
 class PDFToken {
@@ -44,23 +41,18 @@ class PDFToken {
     return '{ $type,${value} }';
   }
 
-  bool isComment() {
-    return isContains('%');
-  }
-  bool hasDelimiter(String s) {
-    return isDelimiter&&isContains(s);
-  }
+  bool isComment() => eq('%'.codeUnits, value.buffer);
+
+  bool isSlash() => eq('/'.codeUnits, value.buffer);
+
+  bool hasDelimiter(String s) => isDelimiter && isContains(s);
 
   bool isOpen() {
-    return hasDelimiter('<<')||hasDelimiter('[')||hasDelimiter('(');
+    return hasDelimiter('<<') || hasDelimiter('[') || hasDelimiter('(');
   }
 
   bool isClose() {
-    return hasDelimiter('>>')||hasDelimiter(']')||hasDelimiter(')');
-  }
-
-  bool isSlash() {
-    return eq('/'.codeUnits, value.buffer);
+    return hasDelimiter('>>') || hasDelimiter(']') || hasDelimiter(')');
   }
 
   bool isContains(String s) {
@@ -70,17 +62,19 @@ class PDFToken {
   List numericCodeUnits = '0123456789'.codeUnits;
 
   bool isNumeric() {
+    if (value.isEmpty) return false;
     return numericCodeUnits.contains(value.first);
   }
 
   bool endWith(String s) {
     var sl = s.codeUnits.length;
     if (sl <= value.length) {
-      var temp = value.buffer.sublist(value.length-sl, value.length);
+      var temp = value.buffer.sublist(value.length - sl, value.length);
       return eq(temp, s.codeUnits);
     }
     return false;
   }
+
   bool startWith(String s) {
     var sl = s.codeUnits.length;
     if (sl <= value.length) {
@@ -90,17 +84,15 @@ class PDFToken {
     return false;
   }
 
-
   Byter endCut(String s) {
     var sl = s.codeUnits.length;
     if (sl <= value.length) {
-      return Byter(value.buffer.sublist(0, value.length-sl));
+      return Byter(value.buffer.sublist(0, value.length - sl));
     }
     return Byter([]);
   }
 
-  String strVal() =>value.str();
-
+  String strVal() => value.str();
 }
 
 class PDFTokenizer {
@@ -121,6 +113,18 @@ class PDFTokenizer {
 
   bool get isWhiteSpace => character(byte) == CHAR_WHITESPACE;
 
+  void ifNullNyte({bool isTen = false}) {
+    if (byte != null) {
+      if (isTen && byte == 10) {
+        file_str.add(byte);
+      } else {
+        byter.nyte();
+      }
+    } else {
+      byter = null;
+    }
+  }
+
   PDFToken getToken() {
     if (ungetted.isNotEmpty) return pop();
     if (byter == null) return null;
@@ -132,11 +136,7 @@ class PDFTokenizer {
         file_str.add(byte);
         byte = byter.byte();
       }
-      if (byte != null) {
-        byter.nyte();
-      }else{
-        byter=null;
-      }
+      ifNullNyte();
       return PDFToken(CHAR_WHITESPACE, file_str.clone(reset: true));
     } else if (isRegular) {
       file_str.clear();
@@ -144,11 +144,7 @@ class PDFTokenizer {
         file_str.add(byte);
         byte = byter.byte();
       }
-      if (byte != null) {
-        byter.nyte();
-      }else{
-        byter=null;
-      }
+      ifNullNyte();
       return PDFToken(CHAR_REGULAR, file_str.clone(reset: true));
     } else {
       if (byte == 0x3C) {
@@ -177,15 +173,7 @@ class PDFTokenizer {
           }
           byte = byter.byte();
         }
-        if (byte != null) {
-          if (byte == 10) {
-            file_str.add(byte);
-          } else {
-            byter.nyte();
-          }
-        }else{
-          byter=null;
-        }
+        ifNullNyte(isTen: true);
         return PDFToken(CHAR_DELIMITER, file_str.clone(reset: true));
       }
       file_str.clear();
@@ -234,63 +222,61 @@ class PDFTokenizer {
 class PDFObject {
   Byter objectId;
   Byter objectVer;
-  List<PDFToken> content=[];
-  List<PDFToken> stream=[];
+  List<PDFToken> content = [];
+  List<PDFToken> stream = [];
 
   PDFDictionary dictionary;
-  int dictionaryC=0;
+  int dictionaryC = 0;
 
-  PDFObject(this.objectId, this.objectVer, this.content){
+  PDFObject(this.objectId, this.objectVer, this.content) {
     parseStream();
-
   }
 
   bool get isStream => stream.isNotEmpty;
 
-  List<PDFToken> copyWithoutWhiteSpace(){
-    var result=<PDFToken>[];
+  List<PDFToken> copyWithoutWhiteSpace() {
+    var result = <PDFToken>[];
     content.forEach((element) {
-      if(!element.isWhiteSpace) result.add(element);
+      if (!element.isWhiteSpace) result.add(element);
     });
     return result;
   }
 
-
   @override
   String toString() {
-    var result=<String>[];
+    var result = <String>[];
     result.add('Object ${objectId.str()} ${objectVer.str()}');
     result.add('Type: ${getType()}');
     result.add('Referencing: ${getReferences()}');
     result.add('Content: ${content.length}');
     result.add('Stream: ${stream.length}');
-    dictionary=PDFDictionary(List.from(content));
+    dictionary = PDFDictionary(List.from(content));
     result.add(JsonEncoder.withIndent('  ').convert(dictionary.parsed));
     result.add('');
     return result.join('\n');
   }
 
   void parseStream() {
-    for(var i=0;i<content.length;i++){
-      if(content[i].isRegular&&content[i].isContains('stream')){
-        stream=content.sublist(i);
-        content=content.sublist(0,i);
+    for (var i = 0; i < content.length; i++) {
+      if (content[i].isRegular && content[i].isContains('stream')) {
+        stream = content.sublist(i);
+        content = content.sublist(0, i);
       }
     }
-    if(isStream){
-      var position=stream.length-1;
-      if(position<0) return;
-      while (stream[position].isWhiteSpace&&position>=0){
-        position-=1;
+    if (isStream) {
+      var position = stream.length - 1;
+      if (position < 0) return;
+      while (stream[position].isWhiteSpace && position >= 0) {
+        position -= 1;
       }
-      if(position<0) return;
-      var currentContent=stream[position];
+      if (position < 0) return;
+      var currentContent = stream[position];
 
-      if(!currentContent.isRegular) return;
-      if(!currentContent.isContains('endstream')) return;
-      if(!currentContent.endWith('endstream')) return;
-      var beforeContent=stream.sublist(0,position);
-      var afterContent=stream.sublist(position+1);
+      if (!currentContent.isRegular) return;
+      if (!currentContent.isContains('endstream')) return;
+      if (!currentContent.endWith('endstream')) return;
+      var beforeContent = stream.sublist(0, position);
+      var afterContent = stream.sublist(position + 1);
       stream.clear();
       stream.addAll(beforeContent);
       stream.add(PDFToken(currentContent.type, currentContent.endCut('endstream')));
@@ -300,18 +286,18 @@ class PDFObject {
   }
 
   String getType() {
-    dictionaryC=0;
-    var cons=copyWithoutWhiteSpace();
-    var i=0;
-    for (var token in cons){
-      if(token.isDelimiter&&token.isContains('<<')){
-        dictionaryC+=1;
+    dictionaryC = 0;
+    var cons = copyWithoutWhiteSpace();
+    var i = 0;
+    for (var token in cons) {
+      if (token.isDelimiter && token.isContains('<<')) {
+        dictionaryC += 1;
       }
-      if(token.isDelimiter&&token.isContains('>>')){
-        dictionaryC-=1;
+      if (token.isDelimiter && token.isContains('>>')) {
+        dictionaryC -= 1;
       }
-      if(dictionaryC==1&&token.isDelimiter&&token.isContains('/Type')&&i<cons.length-1){
-        return cons[i+1].value.str();
+      if (dictionaryC == 1 && token.isDelimiter && token.isContains('/Type') && i < cons.length - 1) {
+        return cons[i + 1].value.str();
       }
       i++;
     }
@@ -319,14 +305,14 @@ class PDFObject {
   }
 
   String getReferences() {
-    var cons=copyWithoutWhiteSpace();
-    var references=<String>[];
-    var i=0;
-    for (var token in cons){
-      if(i>1&&token.isRegular&&token.isContains('R')){
-        if(cons[i-2].isRegular&&cons[i-2].isNumeric()){
-          if(cons[i-1].isRegular&&cons[i-1].isNumeric()){
-            references.add('${cons[i-2].value.str()} ${cons[i-1].value.str()} R');
+    var cons = copyWithoutWhiteSpace();
+    var references = <String>[];
+    var i = 0;
+    for (var token in cons) {
+      if (i > 1 && token.isRegular && token.isContains('R')) {
+        if (cons[i - 2].isRegular && cons[i - 2].isNumeric()) {
+          if (cons[i - 1].isRegular && cons[i - 1].isNumeric()) {
+            references.add('${cons[i - 2].value.str()} ${cons[i - 1].value.str()} R');
           }
         }
       }
@@ -338,18 +324,18 @@ class PDFObject {
 
 class PDFTrailer {
   List<PDFToken> raw;
-  List<PDFToken> data=[];
-  List value=[];
+  List<PDFToken> data = [];
+  List value = [];
 
   PDFTrailer(this.raw) {
     data.clear();
-    for(var element in raw) {
-      if(!element.isWhiteSpace) {
+    for (var element in raw) {
+      if (!element.isWhiteSpace) {
         data.add(element);
         value.add(element.value.str());
       }
     }
-    if(data.isEmpty) return;
+    if (data.isEmpty) return;
   }
 
   @override
@@ -357,23 +343,25 @@ class PDFTrailer {
     return 'PDFTrailer{ ${value.join(' ')} }';
   }
 }
+
 class PDFDictionary {
-  List<PDFToken> data=[];
+  List<PDFToken> data = [];
   List<PDFToken> raw;
-  dynamic parsed={};
-  int state=0;
-  List value=[];
-  PDFDictionary(this.raw){
+  dynamic parsed = {};
+  int state = 0;
+  List value = [];
+
+  PDFDictionary(this.raw) {
     data.clear();
-    for(var element in raw) {
-      if(!element.isWhiteSpace) {
+    for (var element in raw) {
+      if (!element.isWhiteSpace) {
         data.add(element);
         value.add(element.value.str().trim());
       }
     }
-    if(data.isEmpty) return;
-    var token=popToken();
-    if(token.isOpen()) parsed= parseDictionary(token);
+    if (data.isEmpty) return;
+    var token = popToken();
+    if (token.isOpen()) parsed = parseDictionary(token);
   }
 
   @override
@@ -381,56 +369,56 @@ class PDFDictionary {
     return 'PDFDictionary ${value.join(' ')}';
   }
 
-  PDFToken popToken(){
+  PDFToken popToken() {
     PDFToken res;
-    if(data.isNotEmpty){
-      res=data.first;
-      if(data.isNotEmpty) data.removeAt(0);
+    if (data.isNotEmpty) {
+      res = data.first;
+      if (data.isNotEmpty) data.removeAt(0);
     }
     return res;
   }
 
   dynamic parseDictionary(PDFToken open) {
-    var dictionary= {};
-    var list=[];
-    if(open.hasDelimiter('<<')){
-      var keyToken=popToken();
-      while(keyToken!=null&&!keyToken.isClose()){
+    var dictionary = {};
+    var list = [];
+    if (open.hasDelimiter('<<')) {
+      var keyToken = popToken();
+      while (keyToken != null && !keyToken.isClose()) {
         //find key
-        var key=keyToken.strVal();
+        var key = keyToken.strVal();
 
         //find value
-        var valToken=popToken();
-        if(valToken==null||valToken.isClose()) break;
-        if(valToken.isOpen()){
-          dictionary[key]=parseDictionary(valToken);
-        }else{
-          var val=[];
+        var valToken = popToken();
+        if (valToken == null || valToken.isClose()) break;
+        if (valToken.isOpen()) {
+          dictionary[key] = parseDictionary(valToken);
+        } else {
+          var val = [];
           val.add(valToken.strVal());
-          if(!valToken.isContains('/')){
-            while(data.isNotEmpty){
-              valToken=popToken();
-              if(valToken.isContains('/')||valToken.isClose()) break;
+          if (!valToken.isContains('/')) {
+            while (data.isNotEmpty) {
+              valToken = popToken();
+              if (valToken.isContains('/') || valToken.isClose()) break;
               val.add(valToken.strVal());
             }
-            if(!valToken.isClose()) unget(valToken);
+            if (!valToken.isClose()) unget(valToken);
           }
-          dictionary[key]=val.join(' ');
+          dictionary[key] = val.join(' ');
         }
-        keyToken=popToken();
+        keyToken = popToken();
       }
       return dictionary;
     }
-    if(open.hasDelimiter('[')||open.hasDelimiter('(')){
-      var value=popToken();
-      while(value!=null){
-        if(value==null||value.isClose()) break;
-        if(value.isOpen()){
+    if (open.hasDelimiter('[') || open.hasDelimiter('(')) {
+      var value = popToken();
+      while (value != null) {
+        if (value == null || value.isClose()) break;
+        if (value.isOpen()) {
           list.add(parseDictionary(value));
-        }else{
+        } else {
           list.add(value.strVal());
         }
-        value=popToken();
+        value = popToken();
       }
       return list.join(' ');
     }
@@ -466,7 +454,9 @@ class PDFXref {
 
 class PDFStartXref {
   PDFToken token;
+
   PDFStartXref(this.token);
+
   @override
   String toString() {
     return 'PDFStartXref{ ${token.value.str()} }';
@@ -496,8 +486,11 @@ class PDFObjecter {
   PDFObjecter(this.tokenizer);
 
   bool get isContextNoNone => context != CONTEXT_NONE;
+
   bool get isContextObject => context == CONTEXT_OBJ;
+
   bool get isContextTrailer => context == CONTEXT_TRAILER;
+
   bool get isContextXref => context == CONTEXT_XREF;
 
   dynamic getObject() {
@@ -508,7 +501,6 @@ class PDFObjecter {
         token = tokenizer.getTokenIgnoreWhiteSpace();
       }
       if (token == null) break;
-
       if (token.isDelimiter) {
         if (token.isComment()) {
           if (isContextObject) {
@@ -596,15 +588,14 @@ class PDFObjecter {
     return null;
   }
 
-  void getObjects([int id]) {
+  List<dynamic> getObjects([int id]) {
+    var list = <dynamic>[];
     while (true) {
       var o = getObject();
       if (o == null) break;
-      if(id==null){
-        print(o);
-      }else if(o is PDFObject&&o.objectId.str()==id.toString()){
-        print(o);
-      }
+      list.add(o);
     }
+    return list;
   }
+  static PDFObjecter fromFile(File file) => PDFObjecter(PDFTokenizer(Byter(file.readAsBytesSync())));
 }
