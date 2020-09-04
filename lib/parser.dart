@@ -12,7 +12,8 @@ void main() async {
 //  path = '$dir/pdf/2016201680666.pdf';
 //  path = '$dir/pdf/100-p.pdf';
 //  path = '$dir/pdf/jpeg.pdf';
-  path = '/Users/alm/Documents/1112.pdf';
+  path = '/Users/alm/Documents/talun-p.pdf';
+  //--config 'http.proxy=socks5://127.0.0.1:1080'
   var file = File(path);
   print('file.lengthSync(${file.lengthSync()}):>${file.path}');
 

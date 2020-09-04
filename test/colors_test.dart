@@ -173,6 +173,7 @@ class ColorWheel extends Widget {
 Document pdf;
 
 void main() {
+
   setUpAll(() {
     Document.debug = true;
     pdf = Document();
