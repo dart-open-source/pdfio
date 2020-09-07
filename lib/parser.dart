@@ -8,17 +8,17 @@ void main() async {
   var startTime = timeint();
   var dir = Directory.current.path;
   var path = '$dir/res/test.pdf';
-  path = '$dir/res/hello-world.pdf';
+//  path = '$dir/res/hello-world.pdf';
 //  path = '$dir/pdf/2016201680666.pdf';
 //  path = '$dir/pdf/100-p.pdf';
 //  path = '$dir/pdf/jpeg.pdf';
-  path = '/Users/alm/Documents/talun-p.pdf';
+//  path = '/Users/alm/Documents/talun-p.pdf';
   //--config 'http.proxy=socks5://127.0.0.1:1080'
   var file = File(path);
   print('file.lengthSync(${file.lengthSync()}):>${file.path}');
 
-  var object = PDFObjecter.fromFile(file).getObjects();
-  object.forEach((element) {
+  var objects = PDFObjecter.fromFile(file).getObjects();
+  objects.forEach((element) {
     print(element);
   });
   print(timediff(startTime));
@@ -56,13 +56,11 @@ class PDFToken {
     return hasDelimiter('>>') || hasDelimiter(']') || hasDelimiter(')');
   }
 
-  bool isContains(String s) {
-    return value.isContains(s);
-  }
+  bool isContains(String s) => value.isContains(s);
 
   List numericCodeUnits = '0123456789'.codeUnits;
 
-  bool isNumeric() {
+  bool get isNumeric {
     if (value.isEmpty) return false;
     return numericCodeUnits.contains(value.first);
   }
@@ -108,16 +106,20 @@ class PDFTokenizer {
 
   PDFTokenizer(this.byter);
 
-  Byter file_str = Byter([]);
+  Byter newByter = Byter([]);
 
-  bool get isRegular => character(byte) == CHAR_REGULAR;
+  bool get isRegular => character() == CHAR_REGULAR;
 
-  bool get isWhiteSpace => character(byte) == CHAR_WHITESPACE;
+  bool get isWhiteSpace => character() == CHAR_WHITESPACE;
+
+  bool get byterNull => byter == null;
+
+  bool get byteNull => byte == null;
 
   void ifNullNyte({bool isTen = false}) {
     if (byte != null) {
       if (isTen && byte == 10) {
-        file_str.add(byte);
+        newByter.add(byte);
       } else {
         byter.nyte();
       }
@@ -126,30 +128,32 @@ class PDFTokenizer {
     }
   }
 
+  void oneByte() => byte = byter.byte();
+
   PDFToken getToken() {
     if (ungetted.isNotEmpty) return pop();
-    if (byter == null) return null;
-    byte = byter.byte();
-    if (byte == null) return null;
+    if (byterNull) return null;
+    oneByte();
+    if (byteNull) return null;
     if (isWhiteSpace) {
-      file_str.clear();
-      while (byte != null && isWhiteSpace) {
-        file_str.add(byte);
-        byte = byter.byte();
+      newByter.clear();
+      while (!byteNull && isWhiteSpace) {
+        newByter.add(byte);
+        oneByte();
       }
       ifNullNyte();
-      return PDFToken(CHAR_WHITESPACE, file_str.clone(reset: true));
+      return PDFToken(CHAR_WHITESPACE, newByter.clone(reset: true));
     } else if (isRegular) {
-      file_str.clear();
-      while (byte != null && isRegular) {
-        file_str.add(byte);
-        byte = byter.byte();
+      newByter.clear();
+      while (!byteNull && isRegular) {
+        newByter.add(byte);
+        oneByte();
       }
       ifNullNyte();
-      return PDFToken(CHAR_REGULAR, file_str.clone(reset: true));
+      return PDFToken(CHAR_REGULAR, newByter.clone(reset: true));
     } else {
       if (byte == 0x3C) {
-        byte = byter.byte();
+        oneByte();
         if (byte == 0x3C) {
           return PDFToken(CHAR_DELIMITER, Byter('<<'.codeUnits));
         } else {
@@ -157,7 +161,7 @@ class PDFTokenizer {
           return PDFToken(CHAR_DELIMITER, Byter('<'.codeUnits));
         }
       } else if (byte == 0x3E) {
-        byte = byter.byte();
+        oneByte();
         if (byte == 0x3E) {
           return PDFToken(CHAR_DELIMITER, Byter('>>'.codeUnits));
         } else {
@@ -165,21 +169,21 @@ class PDFTokenizer {
           return PDFToken(CHAR_DELIMITER, Byter('>'.codeUnits));
         }
       } else if (byte == 0x25) {
-        file_str.clear();
-        while (byte != null) {
-          file_str.add(byte);
+        newByter.clear();
+        while (!byteNull) {
+          newByter.add(byte);
           if (byte == 10 || byte == 13) {
-            byte = byter.byte();
+            oneByte();
             break;
           }
-          byte = byter.byte();
+          oneByte();
         }
         ifNullNyte(isTen: true);
-        return PDFToken(CHAR_DELIMITER, file_str.clone(reset: true));
+        return PDFToken(CHAR_DELIMITER, newByter.clone(reset: true));
       }
-      file_str.clear();
-      file_str.add(byte);
-      return PDFToken(CHAR_DELIMITER, file_str.clone(reset: true));
+      newByter.clear();
+      newByter.add(byte);
+      return PDFToken(CHAR_DELIMITER, newByter.clone(reset: true));
     }
   }
 
@@ -201,13 +205,9 @@ class PDFTokenizer {
     return tokens;
   }
 
-  static int character(int byte) {
-    if ([0, 9, 10, 12, 13, 32].contains(byte)) {
-      return CHAR_WHITESPACE;
-    }
-    if ([0x28, 0x29, 0x3C, 0x3E, 0x5B, 0x5D, 0x7B, 0x7D, 0x2F, 0x25].contains(byte)) {
-      return CHAR_DELIMITER;
-    }
+  int character() {
+    if ([0, 9, 10, 12, 13, 32].contains(byte)) return CHAR_WHITESPACE;
+    if ([0x28, 0x29, 0x3C, 0x3E, 0x5B, 0x5D, 0x7B, 0x7D, 0x2F, 0x25].contains(byte)) return CHAR_DELIMITER;
     return CHAR_REGULAR;
   }
 
@@ -249,8 +249,7 @@ class PDFObject {
     result.add('Object ${objectId.str()} ${objectVer.str()}');
     result.add('Type: ${getType()}');
     result.add('Referencing: ${getReferences()}');
-    result.add('Content: ${content.length}');
-    result.add('Stream: ${stream.length}');
+    result.add('Content: ${content.length} Stream: ${stream.length}');
     dictionary = PDFDictionary(List.from(content));
     result.add(JsonEncoder.withIndent('  ').convert(dictionary.parsed));
     result.add('');
@@ -311,8 +310,8 @@ class PDFObject {
     var i = 0;
     for (var token in cons) {
       if (i > 1 && token.isRegular && token.isContains('R')) {
-        if (cons[i - 2].isRegular && cons[i - 2].isNumeric()) {
-          if (cons[i - 1].isRegular && cons[i - 1].isNumeric()) {
+        if (cons[i - 2].isRegular && cons[i - 2].isNumeric) {
+          if (cons[i - 1].isRegular && cons[i - 1].isNumeric) {
             references.add('${cons[i - 2].value.str()} ${cons[i - 1].value.str()} R');
           }
         }
@@ -482,8 +481,6 @@ class PDFObjecter {
   dynamic objectId;
   dynamic objectVer;
 
-  var objstm;
-
   PDFObjecter(this.tokenizer);
 
   bool get isContextNoNone => context != CONTEXT_NONE;
@@ -554,9 +551,9 @@ class PDFObjecter {
             content.add(token);
           }
         } else {
-          if (token.isNumeric()) {
+          if (token.isNumeric) {
             token2 = tokenizer.getTokenIgnoreWhiteSpace();
-            if (token2.isNumeric()) {
+            if (token2.isNumeric) {
               token3 = tokenizer.getTokenIgnoreWhiteSpace();
               if (token3.isContains('obj')) {
                 objectId = token.value;
@@ -577,7 +574,7 @@ class PDFObjecter {
             content.add(token);
           } else if (token.isContains('startxref')) {
             token2 = tokenizer.getTokenIgnoreWhiteSpace();
-            if (token2 != null && token2.isNumeric()) {
+            if (token2 != null && token2.isNumeric) {
               return PDFStartXref(token2);
             } else {
               tokenizer.unget(token2);
@@ -598,5 +595,81 @@ class PDFObjecter {
     }
     return list;
   }
+
   static PDFObjecter fromFile(File file) => PDFObjecter(PDFTokenizer(Byter(file.readAsBytesSync())));
 }
+
+
+//    { "b", "Close, fill, and stroke path using nonzero winding number rule" },
+//    { "B", "Fill and stroke path using nonzero winding number rule" },
+//    { "b*", "Close, fill, and stroke path using even-odd rule" },
+//    { "B*", "Fill and stroke path using even-odd rule" },
+//    { "BDC", "(PDF 1.2) Begin marked-content sequence with property list" },
+//    { "BI", "Begin inline image object" },
+//    { "BMC", "(PDF 1.2) Begin marked-content sequence" },
+//    { "BT", "Begin text object" },
+//    { "BX", "(PDF 1.1) Begin compatibility section" },
+//    { "c", "Append curved segment to path (three control points)" },
+//    { "cm", "Concatenate matrix to current transformation matrix" },
+//    { "CS", "(PDF 1.1) Set color space for stroking operations" },
+//    { "cs", "(PDF 1.1) Set color space for nonstroking operations" },
+//    { "d", "Set line dash pattern" },
+//    { "d0", "Set glyph width in Type 3 font" },
+//    { "d1", "Set glyph width and bounding box in Type 3 font" },
+//    { "Do", "Invoke named XObject" },
+//    { "DP", "(PDF 1.2) Define marked-content point with property list" },
+//    { "EI", "End inline image object" },
+//    { "EMC", "(PDF 1.2) End marked-content sequence" },
+//    { "ET", "End text object" },
+//    { "EX", "(PDF 1.1) End compatibility section" },
+//    { "f", "Fill path using nonzero winding number rule" },
+//    { "F", "Fill path using nonzero winding number rule (obsolete)" },
+//    { "f*", "Fill path using even-odd rule" },
+//    { "G", "Set gray level for stroking operations" },
+//    { "g", "Set gray level for nonstroking operations" },
+//    { "gs", "(PDF 1.2) Set parameters from graphics state parameter dictionary" },
+//    { "h", "Close subpath" },
+//    { "i", "Set flatness tolerance" },
+//    { "ID", "Begin inline image data" },
+//    { "j", "Set line join style" },
+//    { "J", "Set line cap style" },
+//    { "K", "Set CMYK color for stroking operations" },
+//    { "k", "Set CMYK color for nonstroking operations" },
+//    { "l", "Append straight line segment to path" },
+//    { "m", "Begin new subpath" },
+//    { "M", "Set miter limit" },
+//    { "MP", "(PDF 1.2) Define marked-content point" },
+//    { "n", "End path without filling or stroking" },
+//    { "q", "Save graphics state" },
+//    { "Q", "Restore graphics state" },
+//    { "re", "Append rectangle to path" },
+//    { "RG", "Set RGB color for stroking operations" },
+//    { "rg", "Set RGB color for nonstroking operations" },
+//    { "ri", "Set color rendering intent" },
+//    { "s", "Close and stroke path" },
+//    { "S", "Stroke path" },
+//    { "SC", "(PDF 1.1) Set color for stroking operations" },
+//    { "sc", "(PDF 1.1) Set color for nonstroking operations" },
+//    { "SCN", "(PDF 1.2) Set color for stroking operations (ICCBased and special color spaces)" },
+//    { "scn", "(PDF 1.2) Set color for nonstroking operations (ICCBased and special color spaces)" },
+//    { "sh", "(PDF 1.3) Paint area defined by shading pattern" },
+//    { "T*", "Move to start of next text line" },
+//    { "Tc", "Set character spacing" },
+//    { "Td", "Move text position" },
+//    { "TD", "Move text position and set leading" },
+//    { "Tf", "Set text font and size" },
+//    { "Tj", "Show text" },
+//    { "TJ", "Show text, allowing individual glyph positioning" },
+//    { "TL", "Set text leading" },
+//    { "Tm", "Set text matrix and text line matrix" },
+//    { "Tr", "Set text rendering mode" },
+//    { "Ts", "Set text rise" },
+//    { "Tw", "Set word spacing" },
+//    { "Tz", "Set horizontal text scaling" },
+//    { "v", "Append curved segment to path (initial point replicated)" },
+//    { "w", "Set line width" },
+//    { "W", "Set clipping path using nonzero winding number rule" },
+//    { "W*", "Set clipping path using even-odd rule" },
+//    { "y", "Append curved segment to path (final point replicated)" },
+//    { "'", "Move to next line and show text" },
+//    { "\"", "Set word and character spacing, move to next line, and show text" },
