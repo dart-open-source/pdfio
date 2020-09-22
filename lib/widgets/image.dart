@@ -52,7 +52,8 @@ void _paintImage({
 void _drawImageRect(PdfGraphics canvas, PdfImage image, PdfRect sourceRect, PdfRect destinationRect) {
   final double fw = destinationRect.width / sourceRect.width;
   final double fh = destinationRect.height / sourceRect.height;
-
+  print('var destinationRect=$destinationRect;');
+  print('var sourceRect=$sourceRect;');
   canvas.saveContext();
   canvas
     ..drawRect(

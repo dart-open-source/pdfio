@@ -26,8 +26,7 @@ class PdfPage extends PdfObject {
   ///
   /// @param pdfDocument Document
   /// @param pageFormat [PdfPageFormat] describing the page size
-  PdfPage(PdfDocument pdfDocument, {this.pageFormat = PdfPageFormat.standard})
-      : super(pdfDocument, '/Page') {
+  PdfPage(PdfDocument pdfDocument, {this.pageFormat = PdfPageFormat.standard}) : super(pdfDocument, '/Page') {
     pdfDocument.pdfPageList.pages.add(this);
   }
 
@@ -165,5 +164,19 @@ class PdfPage extends PdfObject {
     if (annotations.isNotEmpty) {
       params['/Annots'] = PdfArray.fromObjects(annotations);
     }
+  }
+
+  void addImageFile(File imFile, {PdfPageFormat format = PdfPageFormat.a4}) {
+    var image = PdfImage.jpeg(pdfDocument, image: imFile.readAsBytesSync());
+    var canvas = getGraphics();
+    var destinationRect = PdfRect(0.0, 0.0, format.width, format.height);
+    var sourceRect = PdfRect(0.0, 0.0, image.width.toDouble(), image.height.toDouble());
+    var fw = destinationRect.width / sourceRect.width;
+    var fh = destinationRect.height / sourceRect.height;
+    canvas.saveContext();
+    canvas.drawRect(destinationRect.x, destinationRect.y, destinationRect.width, destinationRect.height);
+    canvas.clipPath();
+    canvas.drawImage(image, destinationRect.x - sourceRect.x * fw, destinationRect.y - sourceRect.y * fh, image.width.toDouble() * fw, image.height.toDouble() * fh);
+    canvas.restoreContext();
   }
 }
