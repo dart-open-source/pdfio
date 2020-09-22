@@ -56,7 +56,7 @@ packages:
       path: "../byter"
       relative: true
     source: path
-    version: "0.0.2"
+    version: "0.0.4"
   charcode:
     dependency: transitive
     description:
