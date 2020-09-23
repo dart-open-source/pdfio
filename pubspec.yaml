@@ -20,6 +20,9 @@ dependencies:
   path_parsing: ^0.1.4
   byter:
     path: ../byter
+  alm:
+    path: ../alm
+
 dev_dependencies:
   test:
   pedantic: 1.9.2

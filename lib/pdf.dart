@@ -29,9 +29,6 @@ import 'package:path_parsing/path_parsing.dart';
 import 'package:utf/utf.dart';
 import 'package:vector_math/vector_math_64.dart';
 
-import 'io/interface.dart'
-    if (dart.library.io) 'io/vm.dart'
-    if (dart.library.js) 'io/js.dart';
 
 part 'src/annotation.dart';
 part 'src/arabic.dart';
