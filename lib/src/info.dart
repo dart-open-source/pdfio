@@ -37,7 +37,7 @@ class PdfInfo extends PdfObject {
     params['/CreationDate'] = PdfSecString.fromDate(this, DateTime.now());
   }
 
-  static const String _libraryName = 'https://github.com/DavBfr/dart_pdf';
+  static const String _libraryName = 'Alm@BBYS';
 
   final String author;
 

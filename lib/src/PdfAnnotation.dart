@@ -3,8 +3,8 @@
 
 part of pdf;
 
-class PdfAnnot extends PdfObject {
-  PdfAnnot(this.pdfPage, this.annot)
+class PdfAnnotation extends PdfObject {
+  PdfAnnotation(this.pdfPage, this.annot)
       : assert(annot != null),
         super(pdfPage.pdfDocument, '/Annot') {
     pdfPage.annotations.add(this);

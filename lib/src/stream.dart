@@ -12,8 +12,8 @@ class PdfStream {
     if (_stream.length - _offset >= size) {
       return;
     }
-    final int newSize = _offset + size + _grow;
-    final Uint8List newBuffer = Uint8List(newSize);
+    var newSize = _offset + size + _grow;
+    var newBuffer = Uint8List(newSize);
     newBuffer.setAll(0, _stream);
     _stream = newBuffer;
   }
@@ -43,10 +43,8 @@ class PdfStream {
 
   void putString(String s) {
     assert(() {
-      for (final int codeUnit in s.codeUnits) {
-        if (codeUnit > 0x7f) {
-          return false;
-        }
+      for (var codeUnit in s.codeUnits) {
+        if (codeUnit > 0x7f) return false;
       }
       return true;
     }());

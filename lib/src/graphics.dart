@@ -107,7 +107,6 @@ class PdfGraphics {
 
   /// Draws an image onto the page.
   ///
-  /// This method is implemented with [Ascii85Encoder] encoding and the
   /// zip stream deflater.  It results in a stream that is anywhere
   /// from 3 to 10 times as big as the image.  This obviously needs some
   /// improvement, but it works well for small images

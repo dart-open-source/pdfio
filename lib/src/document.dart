@@ -100,10 +100,7 @@ class PdfDocument {
   /// Generates the document ID
   Uint8List _documentID;
   Uint8List get documentID {
-    if (_documentID == null) {
-      final math.Random rnd = math.Random();
-      _documentID = Uint8List.fromList(sha256 .convert(DateTime.now().toIso8601String().codeUnits + List<int>.generate(32, (_) => rnd.nextInt(256))).bytes);
-    }
+    _documentID ??= Uint8List.fromList(Alm.randomString(32).codeUnits);
     return _documentID;
   }
 
@@ -150,6 +147,7 @@ class PdfDocument {
   ///
   /// @param os OutputStream to write the document to
   void _write(PdfStream os) {
+    // ignore: omit_local_variable_types
     final PdfOutput pos = PdfOutput(os);
 
     // Write each object to the [PdfStream]. We call via the output
@@ -161,6 +159,7 @@ class PdfDocument {
   }
 
   Uint8List save() {
+    // ignore: omit_local_variable_types
     final PdfStream os = PdfStream();
     _write(os);
     return os.output();

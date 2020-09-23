@@ -39,7 +39,7 @@ class PdfPage extends PdfObject {
   bool knockoutTransparency = false;
 
   /// This holds any Annotations contained within this page.
-  List<PdfAnnot> annotations = <PdfAnnot>[];
+  List<PdfAnnotation> annotations = <PdfAnnotation>[];
 
   /// The fonts associated with this page
   final Map<String, PdfFont> fonts = <String, PdfFont>{};

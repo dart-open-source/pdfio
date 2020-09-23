@@ -63,7 +63,6 @@ class PdfStitchingFunction extends PdfBaseFunction {
     params['/Order'] = const PdfNum(3);
     params['/Domain'] = PdfArray.fromNum(<num>[domainStart, domainEnd]);
     params['/Bounds'] = PdfArray.fromNum(bounds);
-    params['/Encode'] = PdfArray.fromNum(
-        List<int>.generate(functions.length * 2, (int i) => i % 2));
+    params['/Encode'] = PdfArray.fromNum(List<int>.generate(functions.length * 2, (int i) => i % 2));
   }
 }

@@ -57,9 +57,9 @@ class PdfCatalog extends PdfObject {
       });
     }
 
-    final List<PdfAnnot> widgets = <PdfAnnot>[];
+    final List<PdfAnnotation> widgets = <PdfAnnotation>[];
     for (PdfPage page in pdfDocument.pdfPageList.pages) {
-      for (PdfAnnot annot in page.annotations) {
+      for (PdfAnnotation annot in page.annotations) {
         if (annot.annot.subtype == '/Widget') {
           widgets.add(annot);
         }

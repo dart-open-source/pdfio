@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017, David PHAM-VAN <dev.nfet.net@gmail.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 // ignore_for_file: omit_local_variable_types
 
 import 'dart:io';
@@ -52,7 +36,6 @@ void printTextTtf(PdfGraphics canvas, String text, File ttfFont, double top) {
   final PdfTtfFont font = PdfTtfFont(canvas.page.pdfDocument, fontData.buffer.asByteData());
   printText(canvas, text, font, top);
 }
-var pathFonts=Directory.current.path+'/fonts/';
 
 void main() {
   test('Pdf TrueType', () {
@@ -60,11 +43,10 @@ void main() {
     final PdfPage page = PdfPage(pdf, pageFormat: PdfPageFormat.a4);
     final PdfGraphics g = page.getGraphics();
     int top = 2;
-    //74968
-    printTextTtf(g, 'Hello ', File('$pathFonts/INFROMAN.TTF'), 30.0 + 30.0 * top++);
+    printTextTtf(g, 'Hello ', File('fonts/INFROMAN.TTF'), 30.0 + 30.0 * top++);
     printText(g, 'Alm.Pazel ', PdfFont.helvetica(pdf), 30.0 + 30.0 * top++);
-    printTextTtf(g, '你好 ', File('$pathFonts/STSONG.TTF'), 30.0 + 30.0 * top++);
-    final File file = File('ttf-2.pdf');
+    printTextTtf(g, '你好 ', File('fonts/STSONG.TTF'), 30.0 + 30.0 * top++);
+    final File file = File('build/ttf-2.pdf');
     file.writeAsBytesSync(pdf.save());
   });
 }

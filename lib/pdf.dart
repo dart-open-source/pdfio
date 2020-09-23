@@ -22,6 +22,7 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:alm/alm.dart';
 import 'package:crypto/crypto.dart';
 import 'package:image/image.dart' as im;
 import 'package:meta/meta.dart';
@@ -30,13 +31,13 @@ import 'package:utf/utf.dart';
 import 'package:vector_math/vector_math_64.dart';
 
 
-part 'src/annotation.dart';
-part 'src/arabic.dart';
-part 'src/array.dart';
+part 'src/PdfAnnotation.dart';
+part 'src/PdfArabic.dart';
+part 'src/PdfArrayObject.dart';
 part 'src/ascii85.dart';
-part 'src/border.dart';
-part 'src/catalog.dart';
-part 'src/color.dart';
+part 'src/PdfBorder.dart';
+part 'src/PdfCatalog.dart';
+part 'src/PdfColor.dart';
 part 'src/colors.dart';
 part 'src/data_types.dart';
 part 'src/document.dart';

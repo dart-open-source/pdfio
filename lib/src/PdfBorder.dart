@@ -22,14 +22,14 @@ enum PdfBorderStyle {
 }
 
 class PdfBorder extends PdfObject {
-  /// Creates a border using the predefined styles in [PdfAnnot].
-  /// Note: Do not use [PdfAnnot.dashed] with this method.
+  /// Creates a border using the predefined styles in [PdfAnnotation].
+  /// Note: Do not use [PdfAnnotation.dashed] with this method.
   /// Use the other constructor.
   ///
   /// @param width The width of the border
   /// @param style The style of the border
   /// @param dash The line pattern definition
-  /// @see [PdfAnnot]
+  /// @see [PdfAnnotation]
   PdfBorder(
     PdfDocument pdfDocument,
     this.width, {
