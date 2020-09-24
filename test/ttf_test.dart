@@ -32,8 +32,7 @@ void printText(PdfGraphics canvas, String text, PdfFont font, double top) {
 }
 
 void printTextTtf(PdfGraphics canvas, String text, File ttfFont, double top) {
-  final Uint8List fontData = ttfFont.readAsBytesSync();
-  final PdfTtfFont font = PdfTtfFont(canvas.page.pdfDocument, fontData.buffer.asByteData());
+  final PdfTtfFont font = PdfTtfFont(canvas.page.pdfDocument, ttfFont.readAsBytesSync().buffer.asByteData());
   printText(canvas, text, font, top);
 }
 

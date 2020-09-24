@@ -41,6 +41,7 @@ class PdfDocument {
     pdfPageList = PdfPageList(this);
     pdfNames = PdfNames(this);
     catalog = PdfCatalog(this, pdfPageList, pageMode, pdfNames);
+    info=PdfInfo(this);
   }
 
   /// This is used to allocate objects a unique serial number in the document.

@@ -36,17 +36,14 @@ class PdfTtfFont extends PdfFont {
 
   @override
   PdfFontMetrics glyphMetrics(int charCode) {
-    final int g = font.charToGlyphIndexMap[charCode];
-
+    var g = font.charToGlyphIndexMap[charCode];
     if (g == null) {
       return PdfFontMetrics.zero;
     }
-
     if (PdfArabic._isArabicDiacriticValue(charCode)) {
-      final PdfFontMetrics metric = font.glyphInfoMap[g] ?? PdfFontMetrics.zero;
+      var metric = font.glyphInfoMap[g] ?? PdfFontMetrics.zero;
       return metric.copyWith(advanceWidth: 0);
     }
-
     return font.glyphInfoMap[g] ?? PdfFontMetrics.zero;
   }
 
@@ -61,7 +58,7 @@ class PdfTtfFont extends PdfFont {
     params['/FontDescriptor'] = descriptor.ref();
     charMin = 32;
     charMax = 255;
-    for (int i = charMin; i <= charMax; i++) {
+    for (var i = charMin; i <= charMax; i++) {
       widthsObject.array
           .add(PdfNum((glyphMetrics(i).advanceWidth * 1000.0).toInt()));
     }
@@ -74,12 +71,12 @@ class PdfTtfFont extends PdfFont {
     int charMin;
     int charMax;
 
-    final TtfWriter ttfWriter = TtfWriter(font);
-    final Uint8List data = ttfWriter.withChars(unicodeCMap.cmap);
+    var ttfWriter = TtfWriter(font);
+    var data = ttfWriter.withChars(unicodeCMap.cmap);
     file.buf.putBytes(data);
     file.params['/Length1'] = PdfNum(data.length);
 
-    final PdfDict descendantFont = PdfDict(<String, PdfDataType>{
+    var descendantFont = PdfDict(<String, PdfDataType>{
       '/Type': const PdfName('/Font'),
       '/BaseFont': PdfName('/' + fontName),
       '/FontFile2': file.ref(),
@@ -105,7 +102,7 @@ class PdfTtfFont extends PdfFont {
 
     charMin = 0;
     charMax = unicodeCMap.cmap.length - 1;
-    for (int i = charMin; i <= charMax; i++) {
+    for (var i = charMin; i <= charMax; i++) {
       widthsObject.array.add(PdfNum((glyphMetrics(unicodeCMap.cmap[i]).advanceWidth * 1000.0).toInt()));
     }
   }
@@ -127,11 +124,11 @@ class PdfTtfFont extends PdfFont {
       super.putText(stream, text);
     }
 
-    final Runes runes = text.runes;
+    var runes = text.runes;
 
     stream.putByte(0x3c);
-    for (int rune in runes) {
-      int char = unicodeCMap.cmap.indexOf(rune);
+    for (var rune in runes) {
+      var char = unicodeCMap.cmap.indexOf(rune);
       if (char == -1) {
         char = unicodeCMap.cmap.length;
         unicodeCMap.cmap.add(rune);
@@ -148,11 +145,10 @@ class PdfTtfFont extends PdfFont {
       return super.stringMetrics(s, letterSpacing: letterSpacing);
     }
 
-    final Runes runes = s.runes;
-    final List<int> bytes = <int>[];
+    var runes = s.runes;
+    var bytes = <int>[];
     runes.forEach(bytes.add);
-
-    final Iterable<PdfFontMetrics> metrics = bytes.map(glyphMetrics);
+    var metrics = bytes.map(glyphMetrics);
     return PdfFontMetrics.append(metrics, letterSpacing: letterSpacing);
   }
 }

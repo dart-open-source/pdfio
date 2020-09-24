@@ -4,26 +4,6 @@ import 'package:alm/alm.dart';
 import 'package:byter/byter.dart';
 import 'package:collection/collection.dart';
 
-void main() async {
-  var startTime = Alm.timeint();
-  var dir = Directory.current.path;
-  var path = '$dir/res/test.pdf';
-//  path = '$dir/res/hello-world.pdf';
-//  path = '$dir/pdf/2016201680666.pdf';
-//  path = '$dir/pdf/100-p.pdf';
-//  path = '$dir/pdf/jpeg.pdf';
-//  path = '/Users/alm/Documents/talun-p.pdf';
-  //--config 'http.proxy=socks5://127.0.0.1:1080'
-  var file = File(path);
-  print('file.lengthSync(${file.lengthSync()}):>${file.path}');
-
-  var objects = PDFObjecter.fromFile(file).getObjects();
-  objects.forEach((element) {
-    print(element);
-  });
-  print(Alm.timediff(startTime));
-}
-
 class PDFToken {
   final int type;
   final Byter value;
