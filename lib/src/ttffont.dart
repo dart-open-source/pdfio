@@ -123,9 +123,7 @@ class PdfTtfFont extends PdfFont {
     if (!font.unicode) {
       super.putText(stream, text);
     }
-
     var runes = text.runes;
-
     stream.putByte(0x3c);
     for (var rune in runes) {
       var char = unicodeCMap.cmap.indexOf(rune);
@@ -133,7 +131,6 @@ class PdfTtfFont extends PdfFont {
         char = unicodeCMap.cmap.length;
         unicodeCMap.cmap.add(rune);
       }
-
       stream.putBytes(latin1.encode(char.toRadixString(16).padLeft(4, '0')));
     }
     stream.putByte(0x3e);
